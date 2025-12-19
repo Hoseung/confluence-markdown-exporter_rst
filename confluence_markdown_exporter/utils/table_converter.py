@@ -68,12 +68,13 @@ class TableConverter(MarkdownConverter):
 
         padded_rows = pad(rows)
         converted = [[self.convert(str(cell)) for cell in row] for row in padded_rows]
+        table_format = self.options.get("tablefmt", "pipe")
 
         has_header = all(cell.name == "th" for cell in rows[0])
         if has_header:
-            return tabulate(converted[1:], headers=converted[0], tablefmt="pipe")
+            return tabulate(converted[1:], headers=converted[0], tablefmt=table_format)
 
-        return tabulate(converted, headers=[""] * len(converted[0]), tablefmt="pipe")
+        return tabulate(converted, headers=[""] * len(converted[0]), tablefmt=table_format)
 
     def convert_th(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
         """This method is empty because we want a No-Op for the <th> tag."""

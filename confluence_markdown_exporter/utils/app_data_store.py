@@ -131,6 +131,11 @@ class AuthConfig(BaseModel):
 class ExportConfig(BaseModel):
     """Export settings for markdown and attachments."""
 
+    output_format: Literal["markdown", "rst"] = Field(
+        default="markdown",
+        title="Output Format",
+        description="Markup format to export pages with. Options: markdown, rst.",
+    )
     output_path: Path = Field(
         default=Path(),
         title="Output Path",
@@ -154,7 +159,7 @@ class ExportConfig(BaseModel):
         ),
     )
     page_path: str = Field(
-        default="{space_name}/{homepage_title}/{ancestor_titles}/{page_title}.md",
+        default="{space_name}/{homepage_title}/{ancestor_titles}/{page_title}.{page_extension}",
         title="Page Path Template",
         description=(
             "Template for exported page file paths.\n"
@@ -167,8 +172,18 @@ class ExportConfig(BaseModel):
             "  - {ancestor_titles}: A slash-separated list of ancestor page titles.\n"
             "  - {page_id}: The unique ID of the Confluence page.\n"
             "  - {page_title}: The title of the Confluence page.\n"
+            "  - {page_extension}: The extension (without dot) of the exported page.\n"
         ),
-        examples=["{space_name}/{page_title}.md"],
+        examples=["{space_name}/{page_title}.{page_extension}"],
+    )
+    page_extension: str = Field(
+        default="md",
+        title="Page Extension",
+        description=(
+            "File extension (without dot) to use for exported pages. "
+            "Defaults to `md` for Markdown and automatically switches to `rst` when "
+            "output_format is set to `rst` unless overridden."
+        ),
     )
     attachment_href: Literal["absolute", "relative"] = Field(
         default="relative",

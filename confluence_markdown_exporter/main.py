@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 from pathlib import Path
 from typing import Annotated
 
@@ -22,13 +23,33 @@ def override_output_path_config(value: Path | None) -> None:
         set_setting("export.output_path", value)
 
 
-@app.command(help="Export one or more Confluence pages by ID or URL to Markdown.")
+class ExportFormat(str, Enum):
+    MARKDOWN = "markdown"
+    RST = "rst"
+
+
+def override_output_format_config(value: ExportFormat | None) -> None:
+    """Override the default output format if provided."""
+    if value is not None:
+        format_value = value.value if isinstance(value, ExportFormat) else str(value)
+        set_setting("export.output_format", format_value.lower())
+
+
+@app.command(help="Export one or more Confluence pages by ID or URL to Markdown or RST.")
 def pages(
     pages: Annotated[list[str], typer.Argument(help="Page ID(s) or URL(s)")],
     output_path: Annotated[
         Path | None,
         typer.Option(
-            help="Directory to write exported Markdown files to. Overrides config if set."
+            help="Directory to write exported files to. Overrides config if set."
+        ),
+    ] = None,
+    output_format: Annotated[
+        ExportFormat | None,
+        typer.Option(
+            "--format",
+            help="Markup format for exported files. Overrides config if set.",
+            case_sensitive=False,
         ),
     ] = None,
 ) -> None:
@@ -37,17 +58,28 @@ def pages(
     with measure(f"Export pages {', '.join(pages)}"):
         for page in pages:
             override_output_path_config(output_path)
+            override_output_format_config(output_format)
             _page = Page.from_id(int(page)) if page.isdigit() else Page.from_url(page)
             _page.export()
 
 
-@app.command(help="Export Confluence pages and their descendant pages by ID or URL to Markdown.")
+@app.command(
+    help="Export Confluence pages and their descendant pages by ID or URL to Markdown or RST."
+)
 def pages_with_descendants(
     pages: Annotated[list[str], typer.Argument(help="Page ID(s) or URL(s)")],
     output_path: Annotated[
         Path | None,
         typer.Option(
-            help="Directory to write exported Markdown files to. Overrides config if set."
+            help="Directory to write exported files to. Overrides config if set."
+        ),
+    ] = None,
+    output_format: Annotated[
+        ExportFormat | None,
+        typer.Option(
+            "--format",
+            help="Markup format for exported files. Overrides config if set.",
+            case_sensitive=False,
         ),
     ] = None,
 ) -> None:
@@ -56,17 +88,26 @@ def pages_with_descendants(
     with measure(f"Export pages {', '.join(pages)} with descendants"):
         for page in pages:
             override_output_path_config(output_path)
+            override_output_format_config(output_format)
             _page = Page.from_id(int(page)) if page.isdigit() else Page.from_url(page)
             _page.export_with_descendants()
 
 
-@app.command(help="Export all Confluence pages of one or more spaces to Markdown.")
+@app.command(help="Export all Confluence pages of one or more spaces to Markdown or RST.")
 def spaces(
     space_keys: Annotated[list[str], typer.Argument()],
     output_path: Annotated[
         Path | None,
         typer.Option(
-            help="Directory to write exported Markdown files to. Overrides config if set."
+            help="Directory to write exported files to. Overrides config if set."
+        ),
+    ] = None,
+    output_format: Annotated[
+        ExportFormat | None,
+        typer.Option(
+            "--format",
+            help="Markup format for exported files. Overrides config if set.",
+            case_sensitive=False,
         ),
     ] = None,
 ) -> None:
@@ -75,16 +116,25 @@ def spaces(
     with measure(f"Export spaces {', '.join(space_keys)}"):
         for space_key in space_keys:
             override_output_path_config(output_path)
+            override_output_format_config(output_format)
             space = Space.from_key(space_key)
             space.export()
 
 
-@app.command(help="Export all Confluence pages across all spaces to Markdown.")
+@app.command(help="Export all Confluence pages across all spaces to Markdown or RST.")
 def all_spaces(
     output_path: Annotated[
         Path | None,
         typer.Option(
-            help="Directory to write exported Markdown files to. Overrides config if set."
+            help="Directory to write exported files to. Overrides config if set."
+        ),
+    ] = None,
+    output_format: Annotated[
+        ExportFormat | None,
+        typer.Option(
+            "--format",
+            help="Markup format for exported files. Overrides config if set.",
+            case_sensitive=False,
         ),
     ] = None,
 ) -> None:
@@ -92,6 +142,7 @@ def all_spaces(
 
     with measure("Export all spaces"):
         override_output_path_config(output_path)
+        override_output_format_config(output_format)
         org = Organization.from_api()
         org.export()
 

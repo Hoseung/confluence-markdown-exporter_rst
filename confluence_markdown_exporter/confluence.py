@@ -25,7 +25,7 @@ from atlassian.errors import ApiNotFoundError
 from bs4 import BeautifulSoup
 from bs4 import Tag
 from markdownify import ATX
-from markdownify import MarkdownConverter
+from markdownify import MarkdownConverter as MarkdownifyConverter
 from pydantic import BaseModel
 from requests import HTTPError
 from tqdm import tqdm
@@ -374,12 +374,17 @@ class Page(Document):
             **super()._template_vars,
             "page_id": str(self.id),
             "page_title": sanitize_filename(self.title),
+            "page_extension": self.page_extension,
         }
 
     @property
     def export_path(self) -> Path:
         filepath_template = Template(settings.export.page_path.replace("{", "${"))
-        return Path(filepath_template.safe_substitute(self._template_vars))
+        path = Path(filepath_template.safe_substitute(self._template_vars))
+        expected_suffix = f".{self.page_extension.lstrip('.')}"
+        if path.suffix != expected_suffix:
+            path = path.with_suffix(expected_suffix)
+        return path
 
     @property
     def html(self) -> str:
@@ -388,8 +393,24 @@ class Page(Document):
         return self.body
 
     @property
+    def page_extension(self) -> str:
+        extension = settings.export.page_extension or "md"
+        if settings.export.output_format == "rst" and extension == "md":
+            return "rst"
+        if not extension:
+            return "md"
+        return extension
+
+    @property
+    def document(self) -> str:
+        if settings.export.output_format == "rst":
+            return RstConverter(self).document
+        return self.MarkdownConverter(self).document
+
+    @property
     def markdown(self) -> str:
-        return self.Converter(self).markdown
+        """Backwards compatible markdown output."""
+        return self.MarkdownConverter(self).document
 
     def export(self) -> None:
         if self.title == "Page not accessible":
@@ -400,7 +421,7 @@ class Page(Document):
             self.export_body()
         # Export attachments first so the files can be utilized during markdown conversion
         self.export_attachments()
-        self.export_markdown()
+        self.export_document()
 
     def export_with_descendants(self) -> None:
         export_pages([self.id, *self.descendants])
@@ -427,10 +448,10 @@ class Page(Document):
             str(self.editor2),
         )
 
-    def export_markdown(self) -> None:
+    def export_document(self) -> None:
         save_file(
             settings.export.output_path / self.export_path,
-            self.markdown,
+            self.document,
         )
 
     def export_attachments(self) -> None:
@@ -550,13 +571,14 @@ class Page(Document):
         msg = f"Could not parse page URL {page_url}."
         raise ValueError(msg)
 
-    class Converter(TableConverter, MarkdownConverter):
-        """Create a custom MarkdownConverter for Confluence HTML to Markdown conversion."""
+    class MarkdownConverter(TableConverter, MarkdownifyConverter):
+        """Convert Confluence HTML to Markdown or reuse as base for other formats."""
 
-        class Options(MarkdownConverter.DefaultOptions):
+        class Options(MarkdownifyConverter.DefaultOptions):
             bullets = "-"
             heading_style = ATX
             macros_to_ignore: Set[str] = frozenset(["qc-read-and-understood-signature-box"])
+            tablefmt = "pipe"
             front_matter_indent = 2
 
         def __init__(self, page: "Page", **options) -> None:  # noqa: ANN003
@@ -565,13 +587,19 @@ class Page(Document):
             self.page_properties = {}
 
         @property
-        def markdown(self) -> str:
-            md_body = self.convert(self.page.html)
+        def document(self) -> str:
+            body = self.convert(self.page.html)
             markdown = f"{self.front_matter}\n"
             if settings.export.page_breadcrumbs:
                 markdown += f"{self.breadcrumbs}\n"
-            markdown += f"{md_body}\n"
+            markdown += f"{body}\n"
             return markdown
+
+        def format_link(self, text: str, href: str) -> str:
+            return f"[{text}]({href})"
+
+        def format_image(self, alt: str, src: str) -> str:
+            return f"![{alt}]({src})"
 
         @property
         def front_matter(self) -> str:
@@ -632,6 +660,7 @@ class Page(Document):
                 "tip": "TIP",
                 "note": "WARNING",
                 "warning": "CAUTION",
+                "callout": "IMPORTANT",
             }
 
             alert_type = alert_type_map.get(str(el["data-macro-name"]), "NOTE")
@@ -652,6 +681,7 @@ class Page(Document):
                     "note": self.convert_alert,
                     "tip": self.convert_alert,
                     "warning": self.convert_alert,
+                    "callout": self.convert_alert,
                     "details": self.convert_page_properties,
                     "drawio": self.convert_drawio,
                     "scroll-ignore": self.convert_hidden_content,
@@ -712,7 +742,7 @@ class Page(Document):
 
             rows = [
                 {
-                    "file": f"[{att.title}]({_get_path(att.export_path)})",
+                    "file": self.format_link(att.title, _get_path(att.export_path)),
                     "modified": f"{att.version.friendly_when} by {self.convert_user(att.version.by)}",  # noqa: E501
                 }
                 for att in self.page.attachments
@@ -785,9 +815,9 @@ class Page(Document):
 
             try:
                 issue = JiraIssue.from_key(str(issue_key))
-                return f"[[{issue.key}] {issue.summary}]({link.get('href')})"
+                return self.format_link(f"[{issue.key}] {issue.summary}", str(link.get("href")))
             except HTTPError:
-                return f"[[{issue_key}]]({link.get('href')})"
+                return self.format_link(f"[{issue_key}]", str(link.get("href")))
 
         def convert_pre(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
             if not text:
@@ -832,7 +862,7 @@ class Page(Document):
                 return self.convert_page_link(int(page_id))
             if str(el.get("href", "")).startswith("#"):
                 # Handle heading links
-                return f"[{text}](#{sanitize_key(text, '-')})"
+                return self.format_link(text, f"#{sanitize_key(text, '-')}")
 
             return super().convert_a(el, text, parent_tags)
 
@@ -844,7 +874,7 @@ class Page(Document):
             page = Page.from_id(page_id)
             page_path = self._get_path_for_href(page.export_path, settings.export.page_href)
 
-            return f"[{page.title}]({page_path.replace(' ', '%20')})"
+            return self.format_link(page.title, page_path.replace(" ", "%20"))
 
         def convert_attachment_link(
             self, el: BeautifulSoup, text: str, parent_tags: list[str]
@@ -864,10 +894,10 @@ class Page(Document):
 
             if attachment is None:
                 href = el.get("href") or text
-                return f"[{text}]({href})"
+                return self.format_link(text, str(href))
 
             path = self._get_path_for_href(attachment.export_path, settings.export.attachment_href)
-            return f"[{attachment.title}]({path.replace(' ', '%20')})"
+            return self.format_link(attachment.title, path.replace(" ", "%20"))
 
         def convert_time(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
             if el.has_attr("datetime"):
@@ -922,9 +952,9 @@ class Page(Document):
             if attachment is None:
                 href = el.get("href") or text
                 if href:
-                    return f"![{text}]({href})"
+                    return self.format_image(text, str(href))
                 if url_src:
-                    return f"![{text}]({url_src})"
+                    return self.format_image(text, url_src)
                 return text
 
             path = self._get_path_for_href(attachment.export_path, settings.export.attachment_href)
@@ -972,8 +1002,12 @@ class Page(Document):
                     preview_attachments[0].export_path, settings.export.attachment_href
                 )
 
-                drawio_image_embedding = f"![{drawio_name}]({preview_path.replace(' ', '%20')})"
-                drawio_link = f"[{drawio_image_embedding}]({drawio_path.replace(' ', '%20')})"
+                drawio_image_embedding = self.format_image(
+                    drawio_name, preview_path.replace(" ", "%20")
+                )
+                drawio_link = self.format_link(
+                    drawio_image_embedding, drawio_path.replace(" ", "%20")
+                )
                 return f"\n{drawio_link}\n\n"
 
             return ""
@@ -1009,8 +1043,108 @@ class Page(Document):
             return result
 
 
+class RstConverter(Page.MarkdownConverter):
+    """Convert Confluence HTML content to reStructuredText."""
+
+    heading_chars = ["=", "-", "~", "^", '"', "'"]
+
+    class Options(Page.MarkdownConverter.Options):  # type: ignore[misc]
+        tablefmt = "grid"
+
+    def format_link(self, text: str, href: str) -> str:
+        return f"`{text} <{href}>`_"
+
+    def format_image(self, alt: str, src: str) -> str:
+        return f"\n.. image:: {src}\n   :alt: {alt}\n\n"
+
+    def convert_alert(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        alert_type_map = {
+            "info": "important",
+            "panel": "note",
+            "tip": "tip",
+            "note": "note",
+            "warning": "warning",
+            "callout": "important",
+        }
+
+        directive = alert_type_map.get(str(el.get("data-macro-name", "")), "note")
+        body = self._indent_block(text)
+        if not body.strip():
+            return ""
+        return f"\n.. {directive}::\n\n{body}\n\n"
+
+    def convert_blockquote(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        content = self._indent_block(text)
+        if not content.strip():
+            return "\n"
+        return f"\n\n{content}\n\n"
+
+    def convert_hN(self, n: int, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        if "_inline" in parent_tags:
+            return text
+
+        n = max(1, min(6, n))
+        heading = text.strip()
+        underline_char = self.heading_chars[min(n - 1, len(self.heading_chars) - 1)]
+        underline = underline_char * len(heading)
+        if n == 1:
+            return f"\n{underline}\n{heading}\n{underline}\n\n"
+        return f"\n{heading}\n{underline}\n\n"
+
+    def convert_pre(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        if not text:
+            return ""
+
+        code_language = ""
+        if el.has_attr("data-syntaxhighlighter-params"):
+            match = re.search(r"brush:\s*([^;]+)", str(el["data-syntaxhighlighter-params"]))
+            if match:
+                code_language = match.group(1)
+
+        indented = self._indent_block(text)
+        if code_language:
+            return f"\n\n.. code-block:: {code_language}\n\n{indented}\n\n"
+        return f"\n\n::\n\n{indented}\n\n"
+
+    def convert_table(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        table = super().convert_table(el, text, parent_tags)
+        if not table.strip():
+            return ""
+        return f"\n\n{table}\n\n"
+
+    def convert_drawio(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        if match := re.search(r"\|diagramName=(.+?)\|", str(el)):
+            drawio_name = match.group(1)
+            preview_name = f"{drawio_name}.png"
+            drawio_attachments = self.page.get_attachments_by_title(drawio_name)
+            preview_attachments = self.page.get_attachments_by_title(preview_name)
+
+            if not drawio_attachments or not preview_attachments:
+                return f"\n.. note:: Drawio diagram `{drawio_name}` not found\n\n"
+
+            drawio_path = self._get_path_for_href(
+                drawio_attachments[0].export_path, settings.export.attachment_href
+            ).replace(" ", "%20")
+            preview_path = self._get_path_for_href(
+                preview_attachments[0].export_path, settings.export.attachment_href
+            ).replace(" ", "%20")
+
+            return (
+                f"\n.. image:: {preview_path}\n"
+                f"   :alt: {drawio_name}\n"
+                f"   :target: {drawio_path}\n\n"
+            )
+
+        return ""
+
+    def _indent_block(self, text: str, indent: int = 3) -> str:
+        indent_str = " " * indent
+        lines = text.strip("\n").splitlines()
+        return "\n".join(f"{indent_str}{line.rstrip()}" if line.strip() else "" for line in lines)
+
+
 def export_page(page_id: int) -> None:
-    """Export a Confluence page to Markdown.
+    """Export a Confluence page to the configured markup format.
 
     Args:
         page_id: The page id.
@@ -1021,7 +1155,7 @@ def export_page(page_id: int) -> None:
 
 
 def export_pages(page_ids: list[int]) -> None:
-    """Export a list of Confluence pages to Markdown.
+    """Export a list of Confluence pages to the configured markup format.
 
     Args:
         page_ids: List of pages to export.

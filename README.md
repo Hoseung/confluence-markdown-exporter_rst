@@ -14,7 +14,7 @@
 
 ## Features
 
-- Converts Confluence pages to Markdown format.
+- Converts Confluence pages to Markdown or reStructuredText formats.
 - Uses the Atlassian API to export individual pages, pages including children, and whole spaces.
 - Supports various Confluence elements such as headings, paragraphs, lists, tables, and more.
 - Retains formatting such as bold, italic, and underline.
@@ -35,6 +35,7 @@
 - **Code Blocks**: Converts Confluence code blocks to Markdown code blocks.
 - **Tasks**: Converts Confluence tasks to Markdown task lists.
 - **Alerts**: Converts Confluence info panels to Markdown alert blocks.
+- **Callouts**: Maps Confluence info, note, warning, tip, and callout panels to alerts/admonitions.
 - **Front Matter**: Adds front matter to the Markdown files for metadata like page properties and page labels.
 - **Mermaid**: Converts Mermaid diagrams embedded in draw.io diagrams to Mermaid code blocks.
 
@@ -69,6 +70,12 @@ or by URL:
 
 ```sh
 confluence-markdown-exporter pages <page-url e.g. https://company.atlassian.net/MySpace/My+Page+Title> <output path e.g. ./output_path/>
+```
+
+Export the same pages as reStructuredText instead of Markdown by adding `--format rst`:
+
+```sh
+confluence-markdown-exporter pages <page-id> <output path e.g. ./output_path/> --format rst
 ```
 
 #### 2.2. Export Page with Descendants
@@ -140,8 +147,10 @@ This will open a menu where you can:
 | Key                                   | Description                                                                                                           | Default                                                             |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | export.output_path                    | The directory where all exported files and folders will be written. Used as the base for relative and absolute links. | ./ (current working directory)                                      |
+| export.output_format                  | Markup format to use for exported pages. Options: "markdown" or "rst".                                                | markdown                                                            |
 | export.page_href                      | How to generate links to pages in Markdown. Options: "relative" (default) or "absolute".                              | relative                                                            |
-| export.page_path                      | Path template for exported pages                                                                                      | {space_name}/{homepage_title}/{ancestor_titles}/{page_title}.md     |
+| export.page_path                      | Path template for exported pages                                                                                      | {space_name}/{homepage_title}/{ancestor_titles}/{page_title}.{page_extension} |
+| export.page_extension                 | File extension (without dot) for exported pages. Automatically switches to "rst" when export.output_format is rst.    | md                                                                  |
 | export.attachment_href                | How to generate links to attachments in Markdown. Options: "relative" (default) or "absolute".                        | relative                                                            |
 | export.attachment_path                | Path template for attachments                                                                                         | {space_name}/attachments/{attachment_file_id}{attachment_extension} |
 | export.page_breadcrumbs               | Whether to include breadcrumb links at the top of the page.                                                           | True                                                                |

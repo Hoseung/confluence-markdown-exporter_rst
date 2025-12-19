@@ -10,6 +10,7 @@ import typer
 from confluence_markdown_exporter.main import app
 from confluence_markdown_exporter.main import config
 from confluence_markdown_exporter.main import override_output_path_config
+from confluence_markdown_exporter.main import override_output_format_config
 from confluence_markdown_exporter.main import version
 
 
@@ -28,6 +29,24 @@ class TestOverrideOutputPathConfig:
     def test_with_none_value(self, mock_set_setting: MagicMock) -> None:
         """Test that None value doesn't call set_setting."""
         override_output_path_config(None)
+
+        mock_set_setting.assert_not_called()
+
+
+class TestOverrideOutputFormatConfig:
+    """Test cases for override_output_format_config function."""
+
+    @patch("confluence_markdown_exporter.main.set_setting")
+    def test_with_format_value(self, mock_set_setting: MagicMock) -> None:
+        """Test setting output format when value is provided."""
+        override_output_format_config("RST")  # type: ignore[arg-type]
+
+        mock_set_setting.assert_called_once_with("export.output_format", "rst")
+
+    @patch("confluence_markdown_exporter.main.set_setting")
+    def test_with_none_value(self, mock_set_setting: MagicMock) -> None:
+        """Test that None value doesn't call set_setting."""
+        override_output_format_config(None)
 
         mock_set_setting.assert_not_called()
 

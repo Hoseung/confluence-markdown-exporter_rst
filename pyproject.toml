@@ -3,10 +3,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "confluence-markdown-exporter"
+name = "confluence-markup-exporter"
 version = "3.1.0"
-description = "A tool to export Confluence pages to Markdown"
-keywords = ["confluence", "atlassian", "markdown", "export", "convertion", "download"]
+description = "A tool to export Confluence pages to Markdown or reStructuredText"
+keywords = ["confluence", "atlassian", "markdown", "rst", "restructuredtext", "export", "convertion", "download"]
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
@@ -35,17 +35,17 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Spenhouet/confluence-markdown-exporter"
-Documentation = "https://github.com/Spenhouet/confluence-markdown-exporter/blob/main/README.md"
-Source = "https://github.com/Spenhouet/confluence-markdown-exporter"
-Tracker = "https://github.com/Spenhouet/confluence-markdown-exporter/issues"
+Homepage = "https://github.com/Hoseung/confluence-markup-exporter"
+Documentation = "https://github.com/Hoseung/confluence-markup-exporter/blob/main/README.md"
+Source = "https://github.com/Hoseung/confluence-markup-exporter"
+Tracker = "https://github.com/Hoseung/confluence-markup-exporter/issues"
 
 [project.scripts]
-confluence-markdown-exporter = "confluence_markdown_exporter.main:app"
-cf-export = "confluence_markdown_exporter.main:app"
+confluence-markup-exporter = "confluence_markup_exporter.main:app"
+cf-export = "confluence_markup_exporter.main:app"
 
 [tool.hatch.build.targets.wheel]
-packages = ["confluence_markdown_exporter"]
+packages = ["confluence_markup_exporter"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories. This means Ruff will not lint or format files with these names

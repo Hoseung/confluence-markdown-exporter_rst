@@ -2,7 +2,7 @@
 
 import pytest
 
-from confluence_markdown_exporter.utils.type_converter import str_to_bool
+from confluence_markup_exporter.utils.type_converter import str_to_bool
 
 
 class TestStrToBool:

@@ -30,16 +30,16 @@ from pydantic import BaseModel
 from requests import HTTPError
 from tqdm import tqdm
 
-from confluence_markdown_exporter.api_clients import get_confluence_instance
-from confluence_markdown_exporter.api_clients import get_jira_instance
-from confluence_markdown_exporter.utils.app_data_store import get_settings
-from confluence_markdown_exporter.utils.app_data_store import set_setting
-from confluence_markdown_exporter.utils.drawio_converter import load_and_parse_drawio
-from confluence_markdown_exporter.utils.export import sanitize_filename
-from confluence_markdown_exporter.utils.export import sanitize_key
-from confluence_markdown_exporter.utils.export import save_file
-from confluence_markdown_exporter.utils.table_converter import TableConverter
-from confluence_markdown_exporter.utils.type_converter import str_to_bool
+from confluence_markup_exporter.api_clients import get_confluence_instance
+from confluence_markup_exporter.api_clients import get_jira_instance
+from confluence_markup_exporter.utils.app_data_store import get_settings
+from confluence_markup_exporter.utils.app_data_store import set_setting
+from confluence_markup_exporter.utils.drawio_converter import load_and_parse_drawio
+from confluence_markup_exporter.utils.export import sanitize_filename
+from confluence_markup_exporter.utils.export import sanitize_key
+from confluence_markup_exporter.utils.export import save_file
+from confluence_markup_exporter.utils.table_converter import TableConverter
+from confluence_markup_exporter.utils.type_converter import str_to_bool
 
 JsonResponse: TypeAlias = dict
 StrPath: TypeAlias = str | PathLike[str]
@@ -1055,7 +1055,56 @@ class RstConverter(Page.MarkdownConverter):
         return f"`{text} <{href}>`_"
 
     def format_image(self, alt: str, src: str) -> str:
-        return f"\n.. image:: {src}\n   :alt: {alt}\n\n"
+        return f"\n.. image:: {src}\n   :alt: {alt}\n"
+
+    def convert_a(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:  # noqa: PLR0911
+        """Override to ensure external links use RST format."""
+        # Let parent handle special cases (user mentions, page links, etc.)
+        # but intercept fallback to markdownify for plain external links
+        href = el.get("href", "")
+        is_external = bool(href) and not any([
+            "user-mention" in str(el.get("class")),
+            "createpage.action" in str(href),
+            "createlink" in str(el.get("class")),
+            el.get("data-linked-resource-type"),
+            re.search(r"/wiki/.+?/pages/\d+", str(href)),
+            str(href).startswith("#"),
+        ])
+        if is_external and text:
+            return self.format_link(text, str(href))
+        # Let parent handle all Confluence-specific link types
+        return super().convert_a(el, text, parent_tags)
+
+    def convert_img(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
+        """Override to ensure images use RST format."""
+        attachment = None
+        if fid := el.get("data-media-id"):
+            attachment = self.page.get_attachment_by_file_id(str(fid))
+
+        url_src = str(el.get("src", ""))
+
+        if ".drawio.png" in url_src:
+            filename = unquote(urlparse(url_src).path.split("/")[-1])
+            drawio_result = self._convert_drawio_embedded_mermaid(filename)
+            if drawio_result:
+                return drawio_result
+            if attachment is None:
+                drawio_images = self.page.get_attachments_by_title(filename)
+                if len(drawio_images) > 0:
+                    attachment = drawio_images[0]
+
+        if attachment is None:
+            alt = str(el.get("alt", "")) or text
+            if url_src:
+                return self.format_image(alt, url_src)
+            href = el.get("href")
+            if href:
+                return self.format_image(alt, str(href))
+            return text
+
+        path = self._get_path_for_href(attachment.export_path, settings.export.attachment_href)
+        alt = str(el.get("alt", "")) or attachment.title
+        return self.format_image(alt, path.replace(" ", "%20"))
 
     def convert_alert(self, el: BeautifulSoup, text: str, parent_tags: list[str]) -> str:
         alert_type_map = {
@@ -1139,8 +1188,20 @@ class RstConverter(Page.MarkdownConverter):
 
     def _indent_block(self, text: str, indent: int = 3) -> str:
         indent_str = " " * indent
-        lines = text.strip("\n").splitlines()
-        return "\n".join(f"{indent_str}{line.rstrip()}" if line.strip() else "" for line in lines)
+        # Strip leading/trailing whitespace and collapse multiple blank lines
+        lines = text.strip().splitlines()
+        result_lines = []
+        prev_blank = False
+        for line in lines:
+            is_blank = not line.strip()
+            if is_blank:
+                if not prev_blank:
+                    result_lines.append("")
+                prev_blank = True
+            else:
+                result_lines.append(f"{indent_str}{line.rstrip()}")
+                prev_blank = False
+        return "\n".join(result_lines)
 
 
 def export_page(page_id: int) -> None:

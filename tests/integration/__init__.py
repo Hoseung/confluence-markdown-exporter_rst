@@ -1,1 +1,1 @@
-"""Integration tests for confluence-markdown-exporter."""
+"""Integration tests for confluence-markup-exporter."""

@@ -20,7 +20,7 @@ def get_app_config_path() -> Path:
     if config_env:
         path = Path(config_env)
     else:
-        app_name = "confluence-markdown-exporter"
+        app_name = "confluence-markup-exporter"
         config_dir = Path(get_app_dir(app_name))
         path = config_dir / "app_data.json"
     path.parent.mkdir(parents=True, exist_ok=True)

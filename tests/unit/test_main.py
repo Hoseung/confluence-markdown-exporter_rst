@@ -7,17 +7,17 @@ from unittest.mock import patch
 import pytest
 import typer
 
-from confluence_markdown_exporter.main import app
-from confluence_markdown_exporter.main import config
-from confluence_markdown_exporter.main import override_output_path_config
-from confluence_markdown_exporter.main import override_output_format_config
-from confluence_markdown_exporter.main import version
+from confluence_markup_exporter.main import app
+from confluence_markup_exporter.main import config
+from confluence_markup_exporter.main import override_output_path_config
+from confluence_markup_exporter.main import override_output_format_config
+from confluence_markup_exporter.main import version
 
 
 class TestOverrideOutputPathConfig:
     """Test cases for override_output_path_config function."""
 
-    @patch("confluence_markdown_exporter.main.set_setting")
+    @patch("confluence_markup_exporter.main.set_setting")
     def test_with_path_value(self, mock_set_setting: MagicMock) -> None:
         """Test setting output path when value is provided."""
         test_path = Path("/test/output")
@@ -25,7 +25,7 @@ class TestOverrideOutputPathConfig:
 
         mock_set_setting.assert_called_once_with("export.output_path", test_path)
 
-    @patch("confluence_markdown_exporter.main.set_setting")
+    @patch("confluence_markup_exporter.main.set_setting")
     def test_with_none_value(self, mock_set_setting: MagicMock) -> None:
         """Test that None value doesn't call set_setting."""
         override_output_path_config(None)
@@ -36,14 +36,14 @@ class TestOverrideOutputPathConfig:
 class TestOverrideOutputFormatConfig:
     """Test cases for override_output_format_config function."""
 
-    @patch("confluence_markdown_exporter.main.set_setting")
+    @patch("confluence_markup_exporter.main.set_setting")
     def test_with_format_value(self, mock_set_setting: MagicMock) -> None:
         """Test setting output format when value is provided."""
         override_output_format_config("RST")  # type: ignore[arg-type]
 
         mock_set_setting.assert_called_once_with("export.output_format", "rst")
 
-    @patch("confluence_markdown_exporter.main.set_setting")
+    @patch("confluence_markup_exporter.main.set_setting")
     def test_with_none_value(self, mock_set_setting: MagicMock) -> None:
         """Test that None value doesn't call set_setting."""
         override_output_format_config(None)
@@ -59,9 +59,9 @@ class TestVersionCommand:
         version()
 
         captured = capsys.readouterr()
-        assert "confluence-markdown-exporter" in captured.out
+        assert "confluence-markup-exporter" in captured.out
         # Should contain version information
-        assert len(captured.out.strip()) > len("confluence-markdown-exporter")
+        assert len(captured.out.strip()) > len("confluence-markup-exporter")
 
 
 class TestAppConfiguration:
@@ -96,7 +96,7 @@ class TestAppConfiguration:
     # and its dependencies. For full test coverage, these should be
     # implemented as integration tests with proper test fixtures.
 
-    @patch("confluence_markdown_exporter.main.get_settings")
+    @patch("confluence_markup_exporter.main.get_settings")
     def test_config_show_command(
         self,
         mock_get_settings: MagicMock,
@@ -115,14 +115,14 @@ class TestAppConfiguration:
         assert "```" in captured.out
         mock_settings.model_dump_json.assert_called_once_with(indent=2)
 
-    @patch("confluence_markdown_exporter.main.main_config_menu_loop")
+    @patch("confluence_markup_exporter.main.main_config_menu_loop")
     def test_config_interactive_command(self, mock_menu_loop: MagicMock) -> None:
         """Test config command in interactive mode."""
         config(None, show=False)
 
         mock_menu_loop.assert_called_once_with(None)
 
-    @patch("confluence_markdown_exporter.main.main_config_menu_loop")
+    @patch("confluence_markup_exporter.main.main_config_menu_loop")
     def test_config_jump_to_option(self, mock_menu_loop: MagicMock) -> None:
         """Test config command with jump_to option."""
         config("auth.confluence", show=False)

@@ -37,11 +37,11 @@ jobs:
 
       - name: Test package installation and import
         run: |
-          uv run --with dist/*.whl --no-project -- python -c "import confluence_markdown_exporter; print('Package imports successfully')"
+          uv run --with dist/*.whl --no-project -- python -c "import confluence_markup_exporter; print('Package imports successfully')"
 
       - name: Test CLI commands
         run: |
-          uv run --with dist/*.whl --no-project confluence-markdown-exporter --help
+          uv run --with dist/*.whl --no-project confluence-markup-exporter --help
           uv run --with dist/*.whl --no-project cf-export --help
 
       - name: Upload build artifacts for inspection

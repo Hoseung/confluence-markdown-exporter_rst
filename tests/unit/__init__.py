@@ -1,1 +1,1 @@
-"""Unit tests for confluence-markdown-exporter."""
+"""Unit tests for confluence-markup-exporter."""

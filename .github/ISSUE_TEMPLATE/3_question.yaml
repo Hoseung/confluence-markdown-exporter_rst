@@ -1,5 +1,5 @@
 name: Question
-description: Ask a question about confluence-markdown-exporter
+description: Ask a question about confluence-markup-exporter
 labels: ["question"]
 body:
   - type: textarea
@@ -12,8 +12,8 @@ body:
   - type: input
     attributes:
       label: Version
-      description: What version of confluence-markdown-exporter are you using? (see `confluence-markdown-exporter version`)
-      placeholder: e.g., confluence-markdown-exporter 3.0.3
+      description: What version of confluence-markup-exporter are you using? (see `confluence-markup-exporter version`)
+      placeholder: e.g., confluence-markup-exporter 3.0.3
     validations:
       required: false
 

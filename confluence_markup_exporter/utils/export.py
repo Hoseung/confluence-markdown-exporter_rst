@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 
-from confluence_markdown_exporter.utils.app_data_store import get_settings
+from confluence_markup_exporter.utils.app_data_store import get_settings
 
 settings = get_settings()
 export_options = settings.export

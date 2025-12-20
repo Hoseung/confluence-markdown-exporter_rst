@@ -1,6 +1,6 @@
 # Contributing
 
-Any contribution is welcome! This document provides guidelines for contributing to the confluence-markdown-exporter project.
+Any contribution is welcome! This document provides guidelines for contributing to the confluence-markup-exporter project.
 
 ## Table of Contents
 
@@ -45,8 +45,8 @@ echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
 1. **Fork and Clone the Repository**
 
    ```bash
-   git clone https://github.com/Spenhouet/confluence-markdown-exporter.git
-   cd confluence-markdown-exporter
+   git clone https://github.com/Spenhouet/confluence-markup-exporter.git
+   cd confluence-markup-exporter
    ```
 
 2. **Install Dependencies**
@@ -64,7 +64,7 @@ echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
 3. **Verify Installation**
 
    ```bash
-   uv run confluence-markdown-exporter --help
+   uv run confluence-markup-exporter --help
    uv run cf-export --help
    ```
 
@@ -74,12 +74,12 @@ echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
 
 ```bash
 # Run with uv (recommended)
-uv run confluence-markdown-exporter [commands]
+uv run confluence-markup-exporter [commands]
 uv run cf-export [commands]
 
 # Or activate the virtual environment
 source .venv/bin/activate
-confluence-markdown-exporter [commands]
+confluence-markup-exporter [commands]
 ```
 
 ### Adding Dependencies
@@ -161,7 +161,7 @@ uv run ruff check
 uv run ruff check --fix
 
 # Check specific files or directories
-uv run ruff check confluence_markdown_exporter/
+uv run ruff check confluence_markup_exporter/
 uv run ruff check tests/
 ```
 
@@ -251,9 +251,9 @@ Recommended extensions for development:
 ### Project Structure
 
 ```text
-confluence-markdown-exporter/
+confluence-markup-exporter/
 ├── .github/workflows/      # CI/CD workflows
-├── confluence_markdown_exporter/  # Main package
+├── confluence_markup_exporter/  # Main package
 │   ├── __init__.py
 │   ├── main.py            # CLI entry point
 │   ├── confluence.py      # Core functionality
@@ -272,4 +272,4 @@ confluence-markdown-exporter/
 - **GitHub Discussions**: For questions and general discussion
 - **Documentation**: Check the README and code comments
 
-Thank you for contributing to confluence-markdown-exporter! 🚀
+Thank you for contributing to confluence-markup-exporter! 🚀

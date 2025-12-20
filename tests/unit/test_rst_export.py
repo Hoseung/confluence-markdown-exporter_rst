@@ -9,12 +9,12 @@ from unittest.mock import MagicMock
 def _load_confluence_module(monkeypatch) -> ModuleType:
     dummy_client = MagicMock()
     monkeypatch.setattr(
-        "confluence_markdown_exporter.api_clients.get_confluence_instance", lambda: dummy_client
+        "confluence_markup_exporter.api_clients.get_confluence_instance", lambda: dummy_client
     )
     monkeypatch.setattr(
-        "confluence_markdown_exporter.api_clients.get_jira_instance", lambda: MagicMock()
+        "confluence_markup_exporter.api_clients.get_jira_instance", lambda: MagicMock()
     )
-    module = importlib.reload(importlib.import_module("confluence_markdown_exporter.confluence"))
+    module = importlib.reload(importlib.import_module("confluence_markup_exporter.confluence"))
     return module
 
 

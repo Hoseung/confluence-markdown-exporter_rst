@@ -9,11 +9,11 @@ from atlassian import Confluence as ConfluenceApiSdk
 from atlassian import Jira as JiraApiSdk
 from questionary import Style
 
-from confluence_markdown_exporter.utils.app_data_store import ApiDetails
-from confluence_markdown_exporter.utils.app_data_store import get_settings
-from confluence_markdown_exporter.utils.app_data_store import set_setting
-from confluence_markdown_exporter.utils.config_interactive import main_config_menu_loop
-from confluence_markdown_exporter.utils.type_converter import str_to_bool
+from confluence_markup_exporter.utils.app_data_store import ApiDetails
+from confluence_markup_exporter.utils.app_data_store import get_settings
+from confluence_markup_exporter.utils.app_data_store import set_setting
+from confluence_markup_exporter.utils.config_interactive import main_config_menu_loop
+from confluence_markup_exporter.utils.type_converter import str_to_bool
 
 DEBUG: bool = str_to_bool(os.getenv("DEBUG", "False"))
 

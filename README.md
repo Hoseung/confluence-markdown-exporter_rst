@@ -1,15 +1,11 @@
 <p align="center">
-  <a href="https://github.com/Spenhouet/confluence-markdown-exporter"><img src="https://raw.githubusercontent.com/Spenhouet/confluence-markdown-exporter/b8caaba935eea7e7017b887c86a740cb7bf99708/logo.png" alt="confluence-markdown-exporter"></a>
+  <a href="https://github.com/Hoseung/confluence-markup-exporter"><img src="https://raw.githubusercontent.com/Spenhouet/confluence-markup-exporter/b8caaba935eea7e7017b887c86a740cb7bf99708/logo.png" alt="confluence-markup-exporter"></a>
 </p>
 <p align="center">
-    <em>The confluence-markdown-exporter exports Confluence pages in Markdown format. This exporter helps in migrating content from Confluence to platforms that support Markdown e.g. Obsidian, Gollum, Azure DevOps (ADO), Foam, Dendron and more.</em>
+    <em>The confluence-markup-exporter exports Confluence pages to Markdown or reStructuredText formats. This exporter helps in migrating content from Confluence to platforms that support Markdown (Obsidian, Gollum, Azure DevOps, Foam, Dendron) or RST (Sphinx, Read the Docs).</em>
 </p>
 <p align="center">
-  <a href="https://github.com/Spenhouet/confluence-markdown-exporter/actions/workflows/ci.yml"><img src="https://github.com/Spenhouet/confluence-markdown-exporter/actions/workflows/ci.yml/badge.svg" alt="Test, Lint and Build"></a>
-  <a href="https://github.com/Spenhouet/confluence-markdown-exporter/actions/workflows/release.yml"><img src="https://github.com/Spenhouet/confluence-markdown-exporter/actions/workflows/release.yml/badge.svg" alt="Build and publish to PyPI"></a>
-  <a href="https://pypi.org/project/confluence-markdown-exporter" target="_blank">
-    <img src="https://img.shields.io/pypi/v/confluence-markdown-exporter?color=%2334D058&label=PyPI%20package" alt="Package version">
-   </a>
+    <em>Fork of <a href="https://github.com/Spenhouet/confluence-markdown-exporter">confluence-markdown-exporter</a> with added reStructuredText support.</em>
 </p>
 
 ## Features
@@ -41,41 +37,41 @@
 
 ## Usage
 
-To use the confluence-markdown-exporter, follow these steps:
+To use the confluence-markup-exporter, follow these steps:
 
 ### 1. Installation
 
 Install python package via pip.
 
 ```sh
-pip install confluence-markdown-exporter
+pip install confluence-markup-exporter
 ```
 
 ### 2. Exporting
 
-Run the exporter with the desired Confluence page ID or space key. Execute the console application by typing `confluence-markdown-exporter` and one of the commands `pages`, `pages-with-descendants`, `spaces`, `all-spaces` or `config`. If a command is unclear, you can always add `--help` to get additional information.
+Run the exporter with the desired Confluence page ID or space key. Execute the console application by typing `confluence-markup-exporter` and one of the commands `pages`, `pages-with-descendants`, `spaces`, `all-spaces` or `config`. If a command is unclear, you can always add `--help` to get additional information.
 
 > [!TIP]
-> Instead of `confluence-markdown-exporter` you can also use the shorthand `cf-export`.
+> Instead of `confluence-markup-exporter` you can also use the shorthand `cf-export`.
 
 #### 2.1. Export Page
 
 Export a single Confluence page by ID:
 
 ```sh
-confluence-markdown-exporter pages <page-id e.g. 645208921> <output path e.g. ./output_path/>
+confluence-markup-exporter pages <page-id e.g. 645208921> <output path e.g. ./output_path/>
 ```
 
 or by URL:
 
 ```sh
-confluence-markdown-exporter pages <page-url e.g. https://company.atlassian.net/MySpace/My+Page+Title> <output path e.g. ./output_path/>
+confluence-markup-exporter pages <page-url e.g. https://company.atlassian.net/MySpace/My+Page+Title> <output path e.g. ./output_path/>
 ```
 
 Export the same pages as reStructuredText instead of Markdown by adding `--format rst`:
 
 ```sh
-confluence-markdown-exporter pages <page-id> <output path e.g. ./output_path/> --format rst
+confluence-markup-exporter pages <page-id> <output path e.g. ./output_path/> --format rst
 ```
 
 #### 2.2. Export Page with Descendants
@@ -83,13 +79,13 @@ confluence-markdown-exporter pages <page-id> <output path e.g. ./output_path/> -
 Export a Confluence page and all its descendant pages by page ID:
 
 ```sh
-confluence-markdown-exporter pages-with-descendants <page-id e.g. 645208921> <output path e.g. ./output_path/>
+confluence-markup-exporter pages-with-descendants <page-id e.g. 645208921> <output path e.g. ./output_path/>
 ```
 
 or by URL:
 
 ```sh
-confluence-markdown-exporter pages-with-descendants <page-url e.g. https://company.atlassian.net/MySpace/My+Page+Title> <output path e.g. ./output_path/>
+confluence-markup-exporter pages-with-descendants <page-url e.g. https://company.atlassian.net/MySpace/My+Page+Title> <output path e.g. ./output_path/>
 ```
 
 #### 2.3. Export Space
@@ -97,7 +93,7 @@ confluence-markdown-exporter pages-with-descendants <page-url e.g. https://compa
 Export all Confluence pages of a single Space:
 
 ```sh
-confluence-markdown-exporter spaces <space-key e.g. MYSPACE> <output path e.g. ./output_path/>
+confluence-markup-exporter spaces <space-key e.g. MYSPACE> <output path e.g. ./output_path/>
 ```
 
 #### 2.3. Export all Spaces
@@ -105,7 +101,7 @@ confluence-markdown-exporter spaces <space-key e.g. MYSPACE> <output path e.g. .
 Export all Confluence pages across all spaces:
 
 ```sh
-confluence-markdown-exporter all-spaces <output path e.g. ./output_path/>
+confluence-markup-exporter all-spaces <output path e.g. ./output_path/>
 ```
 
 ### 3. Output
@@ -132,7 +128,7 @@ All configuration and authentication is stored in a single JSON file managed by 
 To interactively view and change configuration, run:
 
 ```sh
-confluence-markdown-exporter config
+confluence-markup-exporter config
 ```
 
 This will open a menu where you can:
@@ -207,12 +203,12 @@ This is useful for using different configs for different environments or for scr
 Update python package via pip.
 
 ```sh
-pip install confluence-markdown-exporter --upgrade
+pip install confluence-markup-exporter --upgrade
 ```
 
 ## Compatibility
 
-This package is not tested extensively. Please check all output and report any issue [here](https://github.com/Spenhouet/confluence-markdown-exporter/issues).
+This package is not tested extensively. Please check all output and report any issue [here](https://github.com/Spenhouet/confluence-markup-exporter/issues).
 It generally was tested on:
 
 - Confluence Cloud 1000.0.0-b5426ab8524f (2025-05-28)
@@ -220,8 +216,8 @@ It generally was tested on:
 
 ## Known Issues
 
-1. **Missing Attachment File ID on Server**: For some Confluence Server version/configuration the attachment file ID might not be provided (https://github.com/Spenhouet/confluence-markdown-exporter/issues/39). In the default configuration, this is used for the export path. Solution: Adjust the attachment path in the export config and use the `{attachment_id}` or `{attachment_title}` instead.
-2. **Connection Issues when behind Proxy or VPN**: There might be connection issues if your Confluence Server is behind a proxy or VPN (https://github.com/Spenhouet/confluence-markdown-exporter/issues/38). If you experience issues, help to fix this is appreciated.
+1. **Missing Attachment File ID on Server**: For some Confluence Server version/configuration the attachment file ID might not be provided (https://github.com/Spenhouet/confluence-markup-exporter/issues/39). In the default configuration, this is used for the export path. Solution: Adjust the attachment path in the export config and use the `{attachment_id}` or `{attachment_title}` instead.
+2. **Connection Issues when behind Proxy or VPN**: There might be connection issues if your Confluence Server is behind a proxy or VPN (https://github.com/Spenhouet/confluence-markup-exporter/issues/38). If you experience issues, help to fix this is appreciated.
 
 ## Contributing
 

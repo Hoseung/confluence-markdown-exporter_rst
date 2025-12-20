@@ -5,9 +5,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to report an issue! We're glad to have you involved with confluence-markdown-exporter.
+        Thank you for taking the time to report an issue! We're glad to have you involved with confluence-markup-exporter.
 
-        **Before reporting, please make sure to search through [existing issues](https://github.com/Spenhouet/confluence-markdown-exporter/issues?q=is:issue+is:open+label:bug) (including [closed](https://github.com/Spenhouet/confluence-markdown-exporter/issues?q=is:issue%20state:closed%20label:bug)).**
+        **Before reporting, please make sure to search through [existing issues](https://github.com/Spenhouet/confluence-markup-exporter/issues?q=is:issue+is:open+label:bug) (including [closed](https://github.com/Spenhouet/confluence-markup-exporter/issues?q=is:issue%20state:closed%20label:bug)).**
 
   - type: textarea
     attributes:
@@ -15,16 +15,16 @@ body:
       description: |
         A clear and concise description of the bug, including a minimal reproducible example.
 
-        Be sure to include the command you invoked (e.g., `confluence-markdown-exporter pages 645208921`).
-        Idealy, also include your configuration (see `confluence-markdown-exporter config --show`).
+        Be sure to include the command you invoked (e.g., `confluence-markup-exporter pages 645208921`).
+        Idealy, also include your configuration (see `confluence-markup-exporter config --show`).
     validations:
       required: true
 
   - type: input
     attributes:
       label: Version
-      description: What version of confluence-markdown-exporter are you using? (see `confluence-markdown-exporter version`)
-      placeholder: e.g., confluence-markdown-exporter 3.0.3
+      description: What version of confluence-markup-exporter are you using? (see `confluence-markup-exporter version`)
+      placeholder: e.g., confluence-markup-exporter 3.0.3
     validations:
       required: false
 

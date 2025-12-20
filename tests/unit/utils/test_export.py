@@ -7,11 +7,11 @@ from unittest.mock import patch
 
 import pytest
 
-from confluence_markdown_exporter.utils.export import escape_character_class
-from confluence_markdown_exporter.utils.export import parse_encode_setting
-from confluence_markdown_exporter.utils.export import sanitize_filename
-from confluence_markdown_exporter.utils.export import sanitize_key
-from confluence_markdown_exporter.utils.export import save_file
+from confluence_markup_exporter.utils.export import escape_character_class
+from confluence_markup_exporter.utils.export import parse_encode_setting
+from confluence_markup_exporter.utils.export import sanitize_filename
+from confluence_markup_exporter.utils.export import sanitize_key
+from confluence_markup_exporter.utils.export import save_file
 
 
 class TestParseEncodeSetting:
@@ -122,7 +122,7 @@ class TestSaveFile:
 class TestSanitizeFilename:
     """Test cases for sanitize_filename function."""
 
-    @patch("confluence_markdown_exporter.utils.export.export_options")
+    @patch("confluence_markup_exporter.utils.export.export_options")
     def test_no_encoding_specified(self, mock_export_options: MagicMock) -> None:
         """Test sanitizing filename with no encoding specified."""
         mock_export_options.filename_encoding = ""
@@ -131,7 +131,7 @@ class TestSanitizeFilename:
         result = sanitize_filename("Test File.txt")
         assert result == "Test File.txt"
 
-    @patch("confluence_markdown_exporter.utils.export.export_options")
+    @patch("confluence_markup_exporter.utils.export.export_options")
     def test_with_encoding_mapping(self, mock_export_options: MagicMock) -> None:
         """Test sanitizing filename with encoding mapping."""
         mock_export_options.filename_encoding = '" ":"_",":":"_"'
@@ -140,7 +140,7 @@ class TestSanitizeFilename:
         result = sanitize_filename("Test File: Name.txt")
         assert result == "Test_File__Name.txt"
 
-    @patch("confluence_markdown_exporter.utils.export.export_options")
+    @patch("confluence_markup_exporter.utils.export.export_options")
     def test_trim_trailing_spaces_and_dots(self, mock_export_options: MagicMock) -> None:
         """Test that trailing spaces and dots are trimmed."""
         mock_export_options.filename_encoding = ""
@@ -149,7 +149,7 @@ class TestSanitizeFilename:
         result = sanitize_filename("filename . . ")
         assert result == "filename"
 
-    @patch("confluence_markdown_exporter.utils.export.export_options")
+    @patch("confluence_markup_exporter.utils.export.export_options")
     def test_reserved_windows_names(self, mock_export_options: MagicMock) -> None:
         """Test that reserved Windows names are handled."""
         mock_export_options.filename_encoding = ""
@@ -164,7 +164,7 @@ class TestSanitizeFilename:
             result = sanitize_filename(name.lower())
             assert result == f"{name.lower()}_"
 
-    @patch("confluence_markdown_exporter.utils.export.export_options")
+    @patch("confluence_markup_exporter.utils.export.export_options")
     def test_filename_length_limit(self, mock_export_options: MagicMock) -> None:
         """Test that filename length is limited."""
         mock_export_options.filename_encoding = ""
@@ -175,7 +175,7 @@ class TestSanitizeFilename:
         assert len(result) == 10
         assert result == long_filename[:10]
 
-    @patch("confluence_markdown_exporter.utils.export.export_options")
+    @patch("confluence_markup_exporter.utils.export.export_options")
     def test_complex_filename_sanitization(self, mock_export_options: MagicMock) -> None:
         """Test complex filename sanitization with multiple rules."""
         mock_export_options.filename_encoding = '" ":"_","?":"_",":":"_"'

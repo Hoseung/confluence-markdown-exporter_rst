@@ -7,12 +7,12 @@ import pytest
 import requests
 from atlassian.errors import ApiError
 
-from confluence_markdown_exporter.api_clients import ApiClientFactory
-from confluence_markdown_exporter.api_clients import get_confluence_instance
-from confluence_markdown_exporter.api_clients import get_jira_instance
-from confluence_markdown_exporter.api_clients import response_hook
-from confluence_markdown_exporter.utils.app_data_store import ApiDetails
-from confluence_markdown_exporter.utils.app_data_store import ConfigModel
+from confluence_markup_exporter.api_clients import ApiClientFactory
+from confluence_markup_exporter.api_clients import get_confluence_instance
+from confluence_markup_exporter.api_clients import get_jira_instance
+from confluence_markup_exporter.api_clients import response_hook
+from confluence_markup_exporter.utils.app_data_store import ApiDetails
+from confluence_markup_exporter.utils.app_data_store import ConfigModel
 
 
 class TestResponseHook:
@@ -56,7 +56,7 @@ class TestApiClientFactory:
         factory = ApiClientFactory(config)
         assert factory.connection_config == config
 
-    @patch("confluence_markdown_exporter.api_clients.ConfluenceApiSdk")
+    @patch("confluence_markup_exporter.api_clients.ConfluenceApiSdk")
     def test_create_confluence_success(
         self, mock_confluence_sdk: MagicMock, sample_api_details: ApiDetails
     ) -> None:
@@ -80,7 +80,7 @@ class TestApiClientFactory:
         )
         mock_instance.get_all_spaces.assert_called_once_with(limit=1)
 
-    @patch("confluence_markdown_exporter.api_clients.ConfluenceApiSdk")
+    @patch("confluence_markup_exporter.api_clients.ConfluenceApiSdk")
     def test_create_confluence_connection_failure(
         self, mock_confluence_sdk: MagicMock, sample_api_details: ApiDetails
     ) -> None:
@@ -95,7 +95,7 @@ class TestApiClientFactory:
         with pytest.raises(ConnectionError, match="Confluence connection failed"):
             factory.create_confluence(sample_api_details)
 
-    @patch("confluence_markdown_exporter.api_clients.JiraApiSdk")
+    @patch("confluence_markup_exporter.api_clients.JiraApiSdk")
     def test_create_jira_success(
         self, mock_jira_sdk: MagicMock, sample_api_details: ApiDetails
     ) -> None:
@@ -119,7 +119,7 @@ class TestApiClientFactory:
         )
         mock_instance.get_all_projects.assert_called_once()
 
-    @patch("confluence_markdown_exporter.api_clients.JiraApiSdk")
+    @patch("confluence_markup_exporter.api_clients.JiraApiSdk")
     def test_create_jira_connection_failure(
         self, mock_jira_sdk: MagicMock, sample_api_details: ApiDetails
     ) -> None:
@@ -138,8 +138,8 @@ class TestApiClientFactory:
 class TestGetConfluenceInstance:
     """Test cases for get_confluence_instance function."""
 
-    @patch("confluence_markdown_exporter.api_clients.get_settings")
-    @patch("confluence_markdown_exporter.api_clients.ApiClientFactory")
+    @patch("confluence_markup_exporter.api_clients.get_settings")
+    @patch("confluence_markup_exporter.api_clients.ApiClientFactory")
     def test_successful_connection(
         self,
         mock_factory_class: MagicMock,
@@ -161,10 +161,10 @@ class TestGetConfluenceInstance:
         )
         mock_factory.create_confluence.assert_called_once_with(sample_config_model.auth.confluence)
 
-    @patch("confluence_markdown_exporter.api_clients.get_settings")
-    @patch("confluence_markdown_exporter.api_clients.ApiClientFactory")
-    @patch("confluence_markdown_exporter.api_clients.main_config_menu_loop")
-    @patch("confluence_markdown_exporter.api_clients.questionary.print")
+    @patch("confluence_markup_exporter.api_clients.get_settings")
+    @patch("confluence_markup_exporter.api_clients.ApiClientFactory")
+    @patch("confluence_markup_exporter.api_clients.main_config_menu_loop")
+    @patch("confluence_markup_exporter.api_clients.questionary.print")
     def test_connection_failure_retry(
         self,
         mock_questionary_print: MagicMock,
@@ -197,8 +197,8 @@ class TestGetConfluenceInstance:
 class TestGetJiraInstance:
     """Test cases for get_jira_instance function."""
 
-    @patch("confluence_markdown_exporter.api_clients.get_settings")
-    @patch("confluence_markdown_exporter.api_clients.ApiClientFactory")
+    @patch("confluence_markup_exporter.api_clients.get_settings")
+    @patch("confluence_markup_exporter.api_clients.ApiClientFactory")
     def test_successful_connection(
         self,
         mock_factory_class: MagicMock,
@@ -223,8 +223,8 @@ class TestGetJiraInstance:
         )
         mock_factory.create_jira.assert_called_once_with(sample_config_model.auth.jira)
 
-    @patch("confluence_markdown_exporter.api_clients.get_settings")
-    @patch("confluence_markdown_exporter.api_clients.ApiClientFactory")
+    @patch("confluence_markup_exporter.api_clients.get_settings")
+    @patch("confluence_markup_exporter.api_clients.ApiClientFactory")
     def test_caching_behavior(
         self,
         mock_factory_class: MagicMock,

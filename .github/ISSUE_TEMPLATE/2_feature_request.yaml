@@ -5,9 +5,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to suggest a feature! We're glad to have you involved with confluence-markdown-exporter.
+        Thank you for taking the time to suggest a feature! We're glad to have you involved with confluence-markup-exporter.
 
-        **Before submitting, please make sure to search through [existing feature requests](https://github.com/Spenhouet/confluence-markdown-exporter/issues?q=is:issue+is:open+label:enhancement) (including [closed](https://github.com/Spenhouet/confluence-markdown-exporter/issues?q=is:issue%20state:closed%20label:enhancement)).**
+        **Before submitting, please make sure to search through [existing feature requests](https://github.com/Spenhouet/confluence-markup-exporter/issues?q=is:issue+is:open+label:enhancement) (including [closed](https://github.com/Spenhouet/confluence-markup-exporter/issues?q=is:issue%20state:closed%20label:enhancement)).**
 
   - type: textarea
     attributes:
@@ -30,7 +30,7 @@ body:
         If you have ideas about commands, options, or configuration, please include examples:
         ```bash
         # Example command or usage
-        confluence-markdown-exporter <your-suggested-command>
+        confluence-markup-exporter <your-suggested-command>
         ```
     validations:
       required: true

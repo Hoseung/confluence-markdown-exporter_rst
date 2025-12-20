@@ -2,11 +2,11 @@
 
 from pathlib import Path
 
-from confluence_markdown_exporter.utils.drawio_converter import extract_mermaid_data
-from confluence_markdown_exporter.utils.drawio_converter import format_mermaid_markdown
-from confluence_markdown_exporter.utils.drawio_converter import load_and_parse_drawio
-from confluence_markdown_exporter.utils.drawio_converter import load_drawio_file
-from confluence_markdown_exporter.utils.drawio_converter import parse_mermaid_json
+from confluence_markup_exporter.utils.drawio_converter import extract_mermaid_data
+from confluence_markup_exporter.utils.drawio_converter import format_mermaid_markdown
+from confluence_markup_exporter.utils.drawio_converter import load_and_parse_drawio
+from confluence_markup_exporter.utils.drawio_converter import load_drawio_file
+from confluence_markup_exporter.utils.drawio_converter import parse_mermaid_json
 
 
 class TestLoadDrawioFile:

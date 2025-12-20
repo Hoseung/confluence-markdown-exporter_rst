@@ -1,4 +1,4 @@
-"""Shared test fixtures and configuration for confluence-markdown-exporter tests."""
+"""Shared test fixtures and configuration for confluence-markup-exporter tests."""
 
 import tempfile
 from collections.abc import Generator
@@ -10,11 +10,11 @@ import pytest
 from pydantic import AnyHttpUrl
 from pydantic import SecretStr
 
-from confluence_markdown_exporter.utils.app_data_store import ApiDetails
-from confluence_markdown_exporter.utils.app_data_store import AuthConfig
-from confluence_markdown_exporter.utils.app_data_store import ConfigModel
-from confluence_markdown_exporter.utils.app_data_store import ConnectionConfig
-from confluence_markdown_exporter.utils.app_data_store import ExportConfig
+from confluence_markup_exporter.utils.app_data_store import ApiDetails
+from confluence_markup_exporter.utils.app_data_store import AuthConfig
+from confluence_markup_exporter.utils.app_data_store import ConfigModel
+from confluence_markup_exporter.utils.app_data_store import ConnectionConfig
+from confluence_markup_exporter.utils.app_data_store import ExportConfig
 
 
 @pytest.fixture

@@ -11,11 +11,11 @@ from pydantic import ValidationError
 from questionary import Choice
 from questionary import Style
 
-from confluence_markdown_exporter.utils.app_data_store import ConfigModel
-from confluence_markdown_exporter.utils.app_data_store import get_app_config_path
-from confluence_markdown_exporter.utils.app_data_store import get_settings
-from confluence_markdown_exporter.utils.app_data_store import reset_to_defaults
-from confluence_markdown_exporter.utils.app_data_store import set_setting
+from confluence_markup_exporter.utils.app_data_store import ConfigModel
+from confluence_markup_exporter.utils.app_data_store import get_app_config_path
+from confluence_markup_exporter.utils.app_data_store import get_settings
+from confluence_markup_exporter.utils.app_data_store import reset_to_defaults
+from confluence_markup_exporter.utils.app_data_store import set_setting
 
 custom_style = Style(
     [

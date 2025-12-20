@@ -1,1 +1,1 @@
-# Test package for confluence-markdown-exporter
+# Test package for confluence-markup-exporter

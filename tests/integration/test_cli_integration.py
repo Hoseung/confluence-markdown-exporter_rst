@@ -1,4 +1,4 @@
-"""Basic tests for confluence-markdown-exporter package."""
+"""Basic tests for confluence-markup-exporter package."""
 
 import json
 import subprocess
@@ -6,8 +6,8 @@ import sys
 
 import pytest
 
-import confluence_markdown_exporter.main as main_module
-from confluence_markdown_exporter import __version__
+import confluence_markup_exporter.main as main_module
+from confluence_markup_exporter import __version__
 
 
 def test_package_has_version() -> None:
@@ -22,7 +22,7 @@ def test_version_command() -> None:
     try:
         # Test the version command
         result = subprocess.run(  # noqa: S603
-            [sys.executable, "-m", "confluence_markdown_exporter.main", "version"],
+            [sys.executable, "-m", "confluence_markup_exporter.main", "version"],
             capture_output=True,
             text=True,
             check=True,
@@ -30,12 +30,12 @@ def test_version_command() -> None:
         )
 
         # Check that version output contains expected format
-        assert "confluence-markdown-exporter" in result.stdout
+        assert "confluence-markup-exporter" in result.stdout
         assert result.returncode == 0
 
         # The version should be present in output
         # Note: We don't check exact match since dev versions may have extra info
-        assert len(result.stdout.strip()) > len("confluence-markdown-exporter")
+        assert len(result.stdout.strip()) > len("confluence-markup-exporter")
 
     except subprocess.TimeoutExpired:
         pytest.fail("Version command timed out")
@@ -53,7 +53,7 @@ def test_config_show_command() -> None:
             [
                 sys.executable,
                 "-m",
-                "confluence_markdown_exporter.main",
+                "confluence_markup_exporter.main",
                 "config",
                 "--show",
             ],

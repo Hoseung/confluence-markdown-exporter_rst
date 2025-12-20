@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 import pytest
 
-from confluence_markdown_exporter.utils.measure_time import format_log_message
-from confluence_markdown_exporter.utils.measure_time import measure
-from confluence_markdown_exporter.utils.measure_time import measure_time
+from confluence_markup_exporter.utils.measure_time import format_log_message
+from confluence_markup_exporter.utils.measure_time import measure
+from confluence_markup_exporter.utils.measure_time import measure_time
 
 
 class TestMeasureTime:
@@ -19,7 +19,7 @@ class TestMeasureTime:
     def test_measure_time_decorator_logs(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that measure_time decorator logs execution time."""
         # Capture logs from the specific logger used by measure_time
-        logger_name = "confluence_markdown_exporter.utils.measure_time"
+        logger_name = "confluence_markup_exporter.utils.measure_time"
         caplog.set_level(logging.INFO, logger=logger_name)
 
         @measure_time
@@ -38,7 +38,7 @@ class TestMeasureTime:
 
     def test_measure_time_with_exception(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that measure_time decorator handles exceptions properly."""
-        logger_name = "confluence_markdown_exporter.utils.measure_time"
+        logger_name = "confluence_markup_exporter.utils.measure_time"
         caplog.set_level(logging.INFO, logger=logger_name)
 
         @measure_time
@@ -111,7 +111,7 @@ class TestMeasureContextManager:
 
     def test_measure_success(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test measure context manager with successful execution."""
-        logger_name = "confluence_markdown_exporter.utils.measure_time"
+        logger_name = "confluence_markup_exporter.utils.measure_time"
         caplog.set_level(logging.INFO, logger=logger_name)
 
         with measure("Test Operation"):
@@ -126,7 +126,7 @@ class TestMeasureContextManager:
 
     def test_measure_with_exception(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test measure context manager with exception."""
-        logger_name = "confluence_markdown_exporter.utils.measure_time"
+        logger_name = "confluence_markup_exporter.utils.measure_time"
         caplog.set_level(logging.INFO, logger=logger_name)
 
         def failing_operation() -> None:
@@ -143,7 +143,7 @@ class TestMeasureContextManager:
         assert "Failing Operation failed at" in log_messages[1]
         assert "Failing Operation took" in log_messages[2]
 
-    @patch("confluence_markdown_exporter.utils.measure_time.datetime")
+    @patch("confluence_markup_exporter.utils.measure_time.datetime")
     def test_measure_timing_calculation(
         self, mock_datetime: Mock, caplog: pytest.LogCaptureFixture
     ) -> None:
@@ -154,7 +154,7 @@ class TestMeasureContextManager:
 
         mock_datetime.now.side_effect = [start_time, end_time]
 
-        logger_name = "confluence_markdown_exporter.utils.measure_time"
+        logger_name = "confluence_markup_exporter.utils.measure_time"
         caplog.set_level(logging.INFO, logger=logger_name)
 
         with measure("Timed Operation"):

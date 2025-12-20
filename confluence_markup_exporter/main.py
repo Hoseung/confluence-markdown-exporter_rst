@@ -5,12 +5,12 @@ from typing import Annotated
 
 import typer
 
-from confluence_markdown_exporter import __version__
-from confluence_markdown_exporter.utils.app_data_store import get_settings
-from confluence_markdown_exporter.utils.app_data_store import set_setting
-from confluence_markdown_exporter.utils.config_interactive import main_config_menu_loop
-from confluence_markdown_exporter.utils.measure_time import measure
-from confluence_markdown_exporter.utils.type_converter import str_to_bool
+from confluence_markup_exporter import __version__
+from confluence_markup_exporter.utils.app_data_store import get_settings
+from confluence_markup_exporter.utils.app_data_store import set_setting
+from confluence_markup_exporter.utils.config_interactive import main_config_menu_loop
+from confluence_markup_exporter.utils.measure_time import measure
+from confluence_markup_exporter.utils.type_converter import str_to_bool
 
 DEBUG: bool = str_to_bool(os.getenv("DEBUG", "False"))
 
@@ -53,7 +53,7 @@ def pages(
         ),
     ] = None,
 ) -> None:
-    from confluence_markdown_exporter.confluence import Page
+    from confluence_markup_exporter.confluence import Page
 
     with measure(f"Export pages {', '.join(pages)}"):
         for page in pages:
@@ -83,7 +83,7 @@ def pages_with_descendants(
         ),
     ] = None,
 ) -> None:
-    from confluence_markdown_exporter.confluence import Page
+    from confluence_markup_exporter.confluence import Page
 
     with measure(f"Export pages {', '.join(pages)} with descendants"):
         for page in pages:
@@ -111,7 +111,7 @@ def spaces(
         ),
     ] = None,
 ) -> None:
-    from confluence_markdown_exporter.confluence import Space
+    from confluence_markup_exporter.confluence import Space
 
     with measure(f"Export spaces {', '.join(space_keys)}"):
         for space_key in space_keys:
@@ -138,7 +138,7 @@ def all_spaces(
         ),
     ] = None,
 ) -> None:
-    from confluence_markdown_exporter.confluence import Organization
+    from confluence_markup_exporter.confluence import Organization
 
     with measure("Export all spaces"):
         override_output_path_config(output_path)
@@ -171,10 +171,10 @@ def config(
         main_config_menu_loop(jump_to)
 
 
-@app.command(help="Show the current version of confluence-markdown-exporter.")
+@app.command(help="Show the current version of confluence-markup-exporter.")
 def version() -> None:
     """Display the current version."""
-    typer.echo(f"confluence-markdown-exporter {__version__}")
+    typer.echo(f"confluence-markup-exporter {__version__}")
 
 
 if __name__ == "__main__":
